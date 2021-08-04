@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
 import CustomDatePicker from './components/DatePicker';
-import useDatePicker from './hooks/useDatePicker';
+import useDatePicker, { DateType } from './hooks/useDatePicker';
 
-const DATE_ID = {
+type DateID = {
+  [K in DateType]: number
+}
+
+const DATE_ID: DateID = {
   ONE_WEEK: 1,
   TWO_WEEK: 2,
   ONE_MONTH: 3,
   TWO_MONTH: 4,
+  CUSTOM_START_DATE: 5,
+  CUSTOM_END_DATE: 6,
 };
 
 const { ONE_WEEK, TWO_WEEK, ONE_MONTH, TWO_MONTH } = DATE_ID
@@ -21,23 +27,31 @@ const Buttons = [
 function App() {
   const [, setCurrentButtonId] = useState(0)
 
-  const { state: dateState, dispatch } = useDatePicker()
-  const { startDate, endDate } = dateState
+  const {
+    state,
+    getOneWeek,
+    getTwoWeek,
+    getOneMonth,
+    getTwoMonth,
+    getCustomStartDate,
+    getCustomEndDate
+  } = useDatePicker()
+  const { startDate, endDate } = state
 
   const onButtonChange = (id: number) => {
     setCurrentButtonId(id)
     switch (id) {
       case ONE_WEEK:
-        dispatch({ type: "ONE_WEEK" })
+        getOneWeek()
         break
       case TWO_WEEK:
-        dispatch({ type: "TWO_WEEK" })
+        getTwoWeek()
         break
       case ONE_MONTH:
-        dispatch({ type: "ONE_MONTH" })
+        getOneMonth()
         break
       case TWO_MONTH:
-        dispatch({ type: "TWO_MONTH" })
+        getTwoMonth()
         break
       default:
         break
@@ -58,8 +72,8 @@ function App() {
       <CustomDatePicker
         startDate={startDate}
         endDate={endDate}
-        onStartDateChange={(date: Date) => dispatch({ type: "CUSTOM_START_DATE", startDate: date })}
-        onEndDateChange={(date: Date) => dispatch({ type: "CUSTOM_END_DATE", endDate: date })}
+        onStartDateChange={(date: Date) => getCustomStartDate(date)}
+        onEndDateChange={(date: Date) => getCustomEndDate(date)}
       />
     </div>
   );
